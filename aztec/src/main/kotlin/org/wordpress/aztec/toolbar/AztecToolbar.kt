@@ -378,7 +378,7 @@ class AztecToolbar : FrameLayout, IAztecToolbar, OnMenuItemClickListener {
         return editor != null && editor is AztecText
     }
 
-    override fun setEditor(editor: AztecText, sourceEditor: SourceViewEditText?) {
+    override fun setEditor(editor: AztecText?, sourceEditor: SourceViewEditText?) {
         this.sourceEditor = sourceEditor
         this.editor = editor
 
@@ -450,7 +450,15 @@ class AztecToolbar : FrameLayout, IAztecToolbar, OnMenuItemClickListener {
         toolbarButtonPlugins.add(buttonPlugin)
 
         val button = findViewById<ToggleButton>(buttonPlugin.action.buttonId)
-        button.setOnClickListener { buttonPlugin.toggle() }
+        val isToolbarAction = ToolbarAction.values().contains(buttonPlugin.action)
+        button.setOnClickListener {
+            if (isToolbarAction) {
+                onToolbarAction(buttonPlugin.action)
+            } else {
+                buttonPlugin.toggle()
+            }
+        }
+
         button.setBackgroundDrawableRes(buttonPlugin.action.buttonDrawableRes)
 
         setupMediaButtonForAccessibility(buttonPlugin)
@@ -497,7 +505,7 @@ class AztecToolbar : FrameLayout, IAztecToolbar, OnMenuItemClickListener {
             if (action != ToolbarAction.ELLIPSIS_COLLAPSE &&
                     action != ToolbarAction.ELLIPSIS_EXPAND) {
                 val view = findViewById<ToggleButton>(action.buttonId)
-                if (view.isChecked) actions.add(action)
+                if (view?.isChecked == true) actions.add(action)
             }
         }
 
